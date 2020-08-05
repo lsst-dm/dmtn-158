@@ -21,6 +21,9 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 .PHONY: help clean html epub changes linkcheck refresh-bib
 
+index.rst: bin/generate_dmtn.py
+	PYTHONPATH=milestones python bin/generate_dmtn.py
+
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  html         to make standalone HTML files"
@@ -31,7 +34,7 @@ help:
 clean:
 	rm -rf $(BUILDDIR)/*
 
-html:
+html: index.rst
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
