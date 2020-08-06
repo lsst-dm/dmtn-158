@@ -19,7 +19,7 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
-.PHONY: help clean html epub changes linkcheck refresh-bib
+.PHONY: index.rst help clean html epub changes linkcheck refresh-bib
 
 index.rst: bin/generate_dmtn.py
 	PYTHONPATH=milestones python bin/generate_dmtn.py
