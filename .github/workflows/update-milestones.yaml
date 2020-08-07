@@ -1,0 +1,24 @@
+name: Update milestones submodule
+
+"on": workflow_dispatch
+
+jobs:
+  update-milestones:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # full history for metadata
+          submodules: true
+
+      - name: Update milestones submodule
+        run: git submodule update --remote --force milestones
+
+      - uses: actions/checkout@v2
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add milestones
+          git commit -m "Update milestones submodule"
+          git push
