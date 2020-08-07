@@ -26,4 +26,6 @@ jobs:
           git checkout -b update-milestones/${{ steps.get-date.outputs.date }}
           git add milestones
           git commit -m "Update milestones submodule"
-          gh pr create --title "Update milestones submodule" --body ""
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
