@@ -17,15 +17,19 @@ jobs:
 
       - name: Get Date
         id: get-date
-        run: echo "::set-output name=date::$(/bin/date -u "+%Y-%m-%d-%H-%M-%S")"
+        run: echo "::set-output name=date::$(/bin/date -u "+%Y-%m-%d %H:%M:%S")"
         shell: bash
 
       - run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git checkout -b update-milestones/${{ steps.get-date.outputs.date }}
+          #git checkout -b update-milestones/${{ steps.get-date.outputs.date }}
           git add milestones
           git commit -m "Update milestones submodule"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
+        with:
+          branch: update-milestones
+          branch-suffix: timestamp
+          title: Automatic milestone submodule update, ${{ steps.get-date.outputs.date }}
