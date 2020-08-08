@@ -19,10 +19,13 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
-.PHONY: index.rst help clean html epub changes linkcheck refresh-bib
+.PHONY: index.rst _static/burndown.png help clean html epub changes linkcheck refresh-bib
 
 index.rst: bin/generate_dmtn.py
 	PYTHONPATH=milestones python bin/generate_dmtn.py
+
+_static/burndown.png:
+	PYTHONPATH=milestones python milestones/milestones.py burndown --output=_static/burndown.png
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
@@ -33,8 +36,10 @@ help:
 
 clean:
 	rm -rf $(BUILDDIR)/*
+	git checkout index.rst
+	rm -f _static/burndown.png
 
-html: index.rst
+html: index.rst _static/burndown.png
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

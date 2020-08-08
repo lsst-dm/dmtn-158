@@ -82,6 +82,20 @@ class Admonition(TextAccumulator):
     def get_result(self):
         return ".." + textwrap.indent(self._buffer.getvalue(), "   ")[2:] + "\n"
 
+@add_context("paragraph", Paragraph)
+class Figure(TextAccumulator):
+    def __init__(self, filename, name=None, target=None):
+        super().__init__()
+        self._buffer.write("figure:: " + filename + "\n")
+        if name:
+            self._buffer.write(":name: " + name + "\n")
+        if target:
+            self._buffer.write(":target: " + target + "\n")
+        self._buffer.write("\n")
+
+    def get_result(self):
+        return ".." + textwrap.indent(self._buffer.getvalue(), "   ")[2:] + "\n"
+
 
 @add_context("paragraph", Paragraph)
 class BulletListItem(TextAccumulator):
@@ -105,6 +119,7 @@ BulletListItem = add_context("bullet_list", BulletList)(BulletListItem)
 
 @add_context("paragraph", Paragraph)
 @add_context("admonition", Admonition)
+@add_context("figure", Figure)
 @add_context("bullet_list", BulletList)
 class Section(TextAccumulator):
     def __init__(self, level, title, anchor=None):
@@ -125,6 +140,7 @@ Section = add_context("section", Section, needs_level=True)(Section)
 @add_context("paragraph", Paragraph)
 @add_context("section", Section, needs_level=True)
 @add_context("admonition", Admonition)
+@add_context("figure", Figure)
 @add_context("bullet_list", BulletList)
 class ReSTDocument(TextAccumulator):
     def __init__(self, title=None, subtitle=None, options=None):
@@ -159,8 +175,9 @@ def get_version_info():
         .strip("'")
         .split()
     )
+    p6_date = datetime.strptime(os.path.basename(pmcs_path), "%Y%m-ME.xls")
 
-    return sha, datetime.utcfromtimestamp(int(date))
+    return sha, datetime.utcfromtimestamp(int(date)), p6_date
 
 
 def get_extreme_dates(milestones):
@@ -187,7 +204,7 @@ def generate_dmtn(milestones, wbs):
 
     with doc.section("Provenance") as my_section:
         with my_section.paragraph() as p:
-            sha, timestamp = get_version_info()
+            sha, timestamp, p6_date = get_version_info()
             p.write_line(
                 f"This document was generated based on the contents of "
                 f"the `lsst-dm/milestones <https://github.com/lsst-dm/milestones>`_ "
@@ -195,6 +212,31 @@ def generate_dmtn(milestones, wbs):
                 f"`{sha[:8]} <https://github.com/lsst-dm/milestones/commit/{sha}>`_, "
                 f"dated {timestamp.strftime('%Y-%m-%d')}."
             )
+            p.write_line(
+                f"This corresponds to the status recorded in the project "
+                f"controls system for {p6_date.strftime('%B %Y')}."
+            )
+
+    with doc.section("Summary") as my_section:
+        with my_section.paragraph() as p:
+            dm_milestones = [ms for ms in milestones if ms.wbs.startswith(wbs)]
+            p.write_line(
+                f"The DM Subsystem is currently tracking "
+                f"{len(dm_milestones)} milestones."
+            )
+            p.write_line(
+                f"Of these, {len([ms for ms in dm_milestones if ms.completed])} "
+                f"have been completed."
+            )
+            p.write_line(
+                f"Of the incomplete milestones, "
+                f"{sum(1 for ms in dm_milestones if ms.due < datetime.now() and not ms.completed)} "
+                f"are late relative to the baseline schedule, while "
+                f"the remainder are scheduled for the future."
+            )
+        with my_section.figure("_static/burndown.png") as f:
+            with f.paragraph() as p:
+                p.write_line("Milestone completion as a function of date.")
 
     with doc.section("Currently overdue milestones") as my_section:
         overdue_milestones = [
