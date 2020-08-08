@@ -163,6 +163,16 @@ def get_version_info():
     return sha, datetime.utcfromtimestamp(int(date))
 
 
+def get_extreme_dates(milestones):
+    earliest_ms, latest_ms = None, None
+    for ms in milestones:
+        if not earliest_ms or ms.due < earliest_ms:
+            earliest_ms = ms.due
+        if not latest_ms or ms.due > latest_ms:
+            latest_ms = ms.due
+    return earliest_ms, latest_ms
+
+
 def generate_dmtn(milestones, wbs):
     doc = ReSTDocument(options={"tocdepth": 1})
 
@@ -207,14 +217,26 @@ def generate_dmtn(milestones, wbs):
                 p.write_line("None.")
 
     with doc.section("Milestones by due date") as my_section:
-        for year in range(2014, 2023):
-            for month in range(1, 13):
+        earliest_ms, latest_ms = get_extreme_dates(
+            ms for ms in milestones if ms.wbs.startswith(wbs)
+        )
+        first_month = datetime(earliest_ms.year, earliest_ms.month, 1)
+        last_month = (
+            datetime(latest_ms.year, latest_ms.month + 1, 1)
+            if latest_ms.month < 12
+            else datetime(latest_ms.year + 1, 1, 1)
+        )
+
+        for year in range(latest_ms.year, earliest_ms.year - 1, -1):
+            for month in range(12, 0, -1):
                 start_date = datetime(year, month, 1)
                 end_date = (
                     datetime(year, month + 1, 1)
                     if month < 12
                     else datetime(year + 1, 1, 1)
                 )
+                if end_date <= first_month or start_date >= last_month:
+                    continue
                 with my_section.section(f"Due in {start_date.strftime('%B %Y')}") as s:
                     output = [
                         ms
