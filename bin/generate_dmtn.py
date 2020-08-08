@@ -198,7 +198,7 @@ def generate_dmtn(milestones, wbs):
                 for ms in sorted(overdue_milestones, key=lambda ms: ms.wbs + ms.code):
                     with my_list.bullet() as b:
                         with b.paragraph() as p:
-                            p.write_line(f"`{ms.code}`_: {ms.name}")
+                            p.write_line(f"`{ms.code}`_: {ms.name} [Due {ms.due}]")
         else:
             with my_section.paragraph() as p:
                 p.write_line("None.")
