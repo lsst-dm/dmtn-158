@@ -193,13 +193,6 @@ def get_extreme_dates(milestones):
 def generate_dmtn(milestones, wbs):
     doc = ReSTDocument(options={"tocdepth": 1})
 
-    with doc.admonition("note", "**This technote is not yet published.**") as note:
-        with note.paragraph() as p:
-            p.write_line(
-                "This note summarizes all milestones currently being "
-                "tracked by the Data Management subsystem."
-            )
-
     wbs_list = set(ms.wbs[:6] for ms in milestones if ms.wbs.startswith(wbs))
 
     with doc.section("Provenance") as my_section:
