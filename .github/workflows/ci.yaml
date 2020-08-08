@@ -12,6 +12,13 @@ jobs:
           fetch-depth: 0 # full history for metadata
           submodules: true
 
+      - name: Pull LFS files
+        run: |
+          git lfs install
+          git config -f .lfsconfig lfs.url https://git-lfs.lsst.codes
+          git lfs pull
+        working-directory: ./milestones
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -22,10 +29,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           python -m pip install "ltd-conveyor<2.0.0"
+          python -m pip install -r milestones/requirements.txt
 
       - name: Build
         run: |
-          make html
+          PYTHONPATH=milestones make html
 
       - name: Upload
         if: ${{ github.event_name == 'push' }}

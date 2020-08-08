@@ -55,3 +55,5 @@ docushare_url: ""
 
 # GitHub repo URL
 github_url: "https://github.com/lsst-dm/dmtn-158"
+
+exclude_patterns: ["milestones/*", "README.rst", "main.rst"]
