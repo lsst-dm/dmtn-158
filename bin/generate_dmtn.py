@@ -1,4 +1,6 @@
 import textwrap
+import os.path
+import subprocess
 
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -146,6 +148,21 @@ class ReSTDocument(TextAccumulator):
         return super().get_result()
 
 
+def get_version_info():
+    pmcs_path = get_latest_pmcs_path()
+    git_dir = os.path.dirname(pmcs_path)
+    sha, date = (
+        subprocess.check_output(
+            ["git", "log", "-1", "--pretty=format:'%H %ad'", "--date=unix"], cwd=git_dir
+        )
+        .decode("utf-8")
+        .strip("'")
+        .split()
+    )
+
+    return sha, datetime.utcfromtimestamp(int(date))
+
+
 def generate_dmtn(milestones, wbs):
     doc = ReSTDocument(options={"tocdepth": 1})
 
@@ -157,6 +174,17 @@ def generate_dmtn(milestones, wbs):
             )
 
     wbs_list = set(ms.wbs[:6] for ms in milestones if ms.wbs.startswith(wbs))
+
+    with doc.section("Provenance") as my_section:
+        with my_section.paragraph() as p:
+            sha, timestamp = get_version_info()
+            p.write_line(
+                f"This document was generated based on the contents of "
+                f"the `lsst-dm/milestones <https://github.com/lsst-dm/milestones>`_ "
+                f"repository, version "
+                f"`{sha[:8]} <https://github.com/lsst-dm/milestones/commit/{sha}>`_, "
+                f"dated {timestamp.strftime('%Y-%m-%d')}."
+            )
 
     with doc.section("Currently overdue milestones") as my_section:
         overdue_milestones = [
