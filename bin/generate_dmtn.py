@@ -213,10 +213,17 @@ def generate_dmtn(milestones, wbs):
     with doc.section("Summary") as my_section:
         with my_section.paragraph() as p:
             dm_milestones = [ms for ms in milestones if ms.wbs.startswith(wbs)]
+            levels = [ms.level for ms in dm_milestones]
             p.write_line(
                 f"The DM Subsystem is currently tracking "
-                f"{len(dm_milestones)} milestones."
+                f"{len(dm_milestones)} milestones: "
+                f"{levels.count(1)} at Level 1, "
+                f"{levels.count(2)} at Level 2, "
+                f"{levels.count(3)} at Level 3, "
+                f"and {levels.count(4)} at Level 4."
             )
+            if levels.count(None) != 0:
+                p.write_line(f"{levels.count(None)} have no level defined.")
             p.write_line(
                 f"Of these, {len([ms for ms in dm_milestones if ms.completed])} "
                 f"have been completed."
@@ -301,6 +308,10 @@ def generate_dmtn(milestones, wbs):
                         f"{ms.code}: {ms.name}", ms.code
                     ) as subsection:
                         with subsection.bullet_list() as my_list:
+                            with my_list.bullet() as my_bullet:
+                                with my_bullet.paragraph() as p:
+                                    level = ms.level if ms.level else "Undefined"
+                                    p.write_line(f"**Level:** {level}")
                             with my_list.bullet() as my_bullet:
                                 with my_bullet.paragraph() as p:
                                     p.write_line(
