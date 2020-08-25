@@ -312,17 +312,31 @@ def generate_dmtn(milestones, wbs):
                                 with my_bullet.paragraph() as p:
                                     level = ms.level if ms.level else "Undefined"
                                     p.write_line(f"**Level:** {level}")
+                            if ms.test_spec or ms.jira_testplan:
+                                with my_list.bullet() as my_bullet:
+                                    with my_bullet.paragraph() as p:
+                                        p.write_line(f"**Test specification:**")
+                                        if ms.test_spec:
+                                            p.write_line(f"{ms.test_spec}")
+                                        else:
+                                            p.write_line("Undefined")
+                                        if ms.jira_testplan:
+                                            p.write_line(f":jirab:`{ms.jira_testplan}`")
                             with my_list.bullet() as my_bullet:
                                 with my_bullet.paragraph() as p:
                                     p.write_line(
                                         f"**Due:** {ms.due.strftime('%Y-%m-%d')}"
                                     )
-                            if ms.completed:
-                                with my_list.bullet() as my_bullet:
-                                    with my_bullet.paragraph() as p:
+                            with my_list.bullet() as my_bullet:
+                                with my_bullet.paragraph() as p:
+                                    if ms.completed:
                                         p.write_line(
                                             f"**Completed:** {ms.completed.strftime('%Y-%m-%d')}"
                                         )
+                                    else:
+                                        p.write_line( f"**Completion pending**")
+                                    if ms.jira:
+                                        p.write_line(f":jirab:`{ms.jira}`")
                         if ms.description:
                             with subsection.paragraph() as p:
                                 for line in ms.description.strip().split(". "):
