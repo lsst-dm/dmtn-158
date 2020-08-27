@@ -27,6 +27,10 @@ index.rst: bin/generate_dmtn.py
 _static/burndown.png:
 	PYTHONPATH=milestones python milestones/milestones.py burndown --output=_static/burndown.png
 
+_static/graph_%.png:
+	PYTHONPATH=milestones python milestones/milestones.py graph --wbs=$* --output=$@.dot
+	dot -Tpng $@.dot > $@
+
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  html         to make standalone HTML files"
@@ -39,7 +43,7 @@ clean:
 	git checkout index.rst
 	rm -f _static/burndown.png
 
-html: index.rst _static/burndown.png
+html: index.rst _static/burndown.png _static/graph_02C.00.png _static/graph_02C.03.png _static/graph_02C.04.png _static/graph_02C.05.png _static/graph_02C.06.png _static/graph_02C.07.png _static/graph_02C.08.png _static/graph_02C.09.png _static/graph_02C.10.png
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

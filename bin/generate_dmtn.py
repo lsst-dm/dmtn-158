@@ -82,6 +82,7 @@ class Admonition(TextAccumulator):
     def get_result(self):
         return ".." + textwrap.indent(self._buffer.getvalue(), "   ")[2:] + "\n"
 
+
 @add_context("paragraph", Paragraph)
 class Figure(TextAccumulator):
     def __init__(self, filename, name=None, target=None):
@@ -301,6 +302,12 @@ def generate_dmtn(milestones, wbs):
     with doc.section("Milestones by WBS") as my_section:
         for wbs in sorted(wbs_list):
             with my_section.section(f"{wbs}: {WBS_DEFINITIONS[wbs]}") as section:
+                with my_section.figure(f"_static/graph_{wbs}.png") as f:
+                    with f.paragraph() as p:
+                        p.write_line(
+                            "Relationships between milestones in this WBS "
+                            "element and their immediate predecessors and successors."
+                        )
                 for ms in sorted(milestones, key=lambda ms: ms.due):
                     if not ms.wbs.startswith(wbs):
                         continue
@@ -334,7 +341,7 @@ def generate_dmtn(milestones, wbs):
                                             f"**Completed:** {ms.completed.strftime('%Y-%m-%d')}"
                                         )
                                     else:
-                                        p.write_line( f"**Completion pending**")
+                                        p.write_line(f"**Completion pending**")
                                     if ms.jira:
                                         p.write_line(f":jirab:`{ms.jira}`")
                         if ms.description:
