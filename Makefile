@@ -65,7 +65,7 @@ linkcheck:
 	      "or in $(BUILDDIR)/linkcheck/output.txt."
 
 refresh-bib:
-	mkdir lsstbib
+	mkdir -p lsstbib
 	refresh-lsst-bib -d lsstbib
 	@echo
 	@echo "Commit the new bibliographies: git add lsstbib && git commit -m \"Update bibliographies.\""

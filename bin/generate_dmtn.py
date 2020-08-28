@@ -73,29 +73,29 @@ class Paragraph(TextAccumulator):
 
 
 @add_context("paragraph", Paragraph)
-class Admonition(TextAccumulator):
-    def __init__(self, admonition_type, title):
+class Directive(TextAccumulator):
+    def __init__(self, name, argument=None, options={}):
         super().__init__()
-        self._buffer.write(admonition_type + ":: " + title if title else "")
-        self._buffer.write("\n\n")
-
-    def get_result(self):
-        return ".." + textwrap.indent(self._buffer.getvalue(), "   ")[2:] + "\n"
-
-
-@add_context("paragraph", Paragraph)
-class Figure(TextAccumulator):
-    def __init__(self, filename, name=None, target=None):
-        super().__init__()
-        self._buffer.write("figure:: " + filename + "\n")
-        if name:
-            self._buffer.write(":name: " + name + "\n")
-        if target:
-            self._buffer.write(":target: " + target + "\n")
+        self._buffer.write(f"{name}:: {argument if argument else ''}\n")
+        for name, value in options.items():
+            if value:
+                self._buffer.write(f":{name}: {value}\n")
+            else:
+                self._buffer.write(f":{name}:\n")
         self._buffer.write("\n")
 
     def get_result(self):
         return ".." + textwrap.indent(self._buffer.getvalue(), "   ")[2:] + "\n"
+
+
+class Admonition(Directive):
+    pass
+
+
+class Figure(Directive):
+    def __init__(self, filename, target=None):
+        opts = {"target": target} if target else {}
+        super().__init__("figure", filename, opts)
 
 
 @add_context("paragraph", Paragraph)
