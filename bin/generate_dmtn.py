@@ -1,6 +1,7 @@
-import textwrap
+import glob
 import os.path
 import subprocess
+import textwrap
 
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -143,6 +144,7 @@ Section = add_context("section", Section, needs_level=True)(Section)
 @add_context("admonition", Admonition)
 @add_context("figure", Figure)
 @add_context("bullet_list", BulletList)
+@add_context("directive", Directive)
 class ReSTDocument(TextAccumulator):
     def __init__(self, title=None, subtitle=None, options=None):
         super().__init__()
@@ -359,6 +361,11 @@ def generate_dmtn(milestones, wbs):
                                 "warning", "No description available"
                             ):
                                 pass
+
+    with doc.directive(
+        "bibliography", " ".join(glob.glob("lsstbib/*.bib")), {"style": "lsst_aa"},
+    ):
+        pass
 
     return doc.get_result()
 
