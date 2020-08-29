@@ -21,7 +21,7 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 .PHONY: index.rst _static/burndown.png help clean html epub changes linkcheck refresh-bib
 
-index.rst: bin/generate_dmtn.py
+index.rst: bin/generate_dmtn.py refresh-bib
 	PYTHONPATH=milestones python bin/generate_dmtn.py
 
 _static/burndown.png:
@@ -65,6 +65,7 @@ linkcheck:
 	      "or in $(BUILDDIR)/linkcheck/output.txt."
 
 refresh-bib:
+	mkdir -p lsstbib
 	refresh-lsst-bib -d lsstbib
 	@echo
 	@echo "Commit the new bibliographies: git add lsstbib && git commit -m \"Update bibliographies.\""

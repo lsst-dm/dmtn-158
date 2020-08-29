@@ -1,6 +1,7 @@
-import textwrap
+import glob
 import os.path
 import subprocess
+import textwrap
 
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -8,10 +9,11 @@ from io import StringIO
 from contextlib import contextmanager
 
 from milestones import (
-    write_output,
+    add_rst_citations,
     get_latest_pmcs_path,
     get_local_data_path,
     load_milestones,
+    write_output,
 )
 
 
@@ -73,29 +75,29 @@ class Paragraph(TextAccumulator):
 
 
 @add_context("paragraph", Paragraph)
-class Admonition(TextAccumulator):
-    def __init__(self, admonition_type, title):
+class Directive(TextAccumulator):
+    def __init__(self, name, argument=None, options={}):
         super().__init__()
-        self._buffer.write(admonition_type + ":: " + title if title else "")
-        self._buffer.write("\n\n")
-
-    def get_result(self):
-        return ".." + textwrap.indent(self._buffer.getvalue(), "   ")[2:] + "\n"
-
-
-@add_context("paragraph", Paragraph)
-class Figure(TextAccumulator):
-    def __init__(self, filename, name=None, target=None):
-        super().__init__()
-        self._buffer.write("figure:: " + filename + "\n")
-        if name:
-            self._buffer.write(":name: " + name + "\n")
-        if target:
-            self._buffer.write(":target: " + target + "\n")
+        self._buffer.write(f"{name}:: {argument if argument else ''}\n")
+        for name, value in options.items():
+            if value:
+                self._buffer.write(f":{name}: {value}\n")
+            else:
+                self._buffer.write(f":{name}:\n")
         self._buffer.write("\n")
 
     def get_result(self):
         return ".." + textwrap.indent(self._buffer.getvalue(), "   ")[2:] + "\n"
+
+
+class Admonition(Directive):
+    pass
+
+
+class Figure(Directive):
+    def __init__(self, filename, target=None):
+        opts = {"target": target} if target else {}
+        super().__init__("figure", filename, opts)
 
 
 @add_context("paragraph", Paragraph)
@@ -122,6 +124,7 @@ BulletListItem = add_context("bullet_list", BulletList)(BulletListItem)
 @add_context("admonition", Admonition)
 @add_context("figure", Figure)
 @add_context("bullet_list", BulletList)
+@add_context("directive", Directive)
 class Section(TextAccumulator):
     def __init__(self, level, title, anchor=None):
         super().__init__()
@@ -143,6 +146,7 @@ Section = add_context("section", Section, needs_level=True)(Section)
 @add_context("admonition", Admonition)
 @add_context("figure", Figure)
 @add_context("bullet_list", BulletList)
+@add_context("directive", Directive)
 class ReSTDocument(TextAccumulator):
     def __init__(self, title=None, subtitle=None, options=None):
         super().__init__()
@@ -330,7 +334,7 @@ def generate_dmtn(milestones, wbs):
                                     with my_bullet.paragraph() as p:
                                         p.write_line(f"**Test specification:**")
                                         if ms.test_spec:
-                                            p.write_line(f"{ms.test_spec}")
+                                            p.write_line(add_rst_citations(f"{ms.test_spec}"))
                                         else:
                                             p.write_line("Undefined")
                                         if ms.jira_testplan:
@@ -353,12 +357,18 @@ def generate_dmtn(milestones, wbs):
                         if ms.description:
                             with subsection.paragraph() as p:
                                 for line in ms.description.strip().split(". "):
-                                    p.write_line(line.strip(" .") + ".")
+                                    p.write_line(add_rst_citations(line.strip(" .") + "."))
                         else:
                             with subsection.admonition(
                                 "warning", "No description available"
                             ):
                                 pass
+
+    with doc.section("Bibliography") as bib:
+        with bib.directive(
+            "bibliography", " ".join(glob.glob("lsstbib/*.bib")), {"style": "lsst_aa"},
+        ):
+            pass
 
     return doc.get_result()
 
