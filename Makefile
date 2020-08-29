@@ -21,7 +21,7 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 .PHONY: index.rst _static/burndown.png help clean html epub changes linkcheck refresh-bib
 
-index.rst: bin/generate_dmtn.py
+index.rst: bin/generate_dmtn.py refresh-bib
 	PYTHONPATH=milestones python bin/generate_dmtn.py
 
 _static/burndown.png:
@@ -43,7 +43,7 @@ clean:
 	git checkout index.rst
 	rm -f _static/burndown.png
 
-html: index.rst _static/burndown.png _static/graph_02C.00.png _static/graph_02C.03.png _static/graph_02C.04.png _static/graph_02C.05.png _static/graph_02C.06.png _static/graph_02C.07.png _static/graph_02C.08.png _static/graph_02C.09.png _static/graph_02C.10.png refresh-bib
+html: index.rst _static/burndown.png _static/graph_02C.00.png _static/graph_02C.03.png _static/graph_02C.04.png _static/graph_02C.05.png _static/graph_02C.06.png _static/graph_02C.07.png _static/graph_02C.08.png _static/graph_02C.09.png _static/graph_02C.10.png
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."

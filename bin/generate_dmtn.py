@@ -9,10 +9,11 @@ from io import StringIO
 from contextlib import contextmanager
 
 from milestones import (
-    write_output,
+    add_rst_citations,
     get_latest_pmcs_path,
     get_local_data_path,
     load_milestones,
+    write_output,
 )
 
 
@@ -123,6 +124,7 @@ BulletListItem = add_context("bullet_list", BulletList)(BulletListItem)
 @add_context("admonition", Admonition)
 @add_context("figure", Figure)
 @add_context("bullet_list", BulletList)
+@add_context("directive", Directive)
 class Section(TextAccumulator):
     def __init__(self, level, title, anchor=None):
         super().__init__()
@@ -332,7 +334,7 @@ def generate_dmtn(milestones, wbs):
                                     with my_bullet.paragraph() as p:
                                         p.write_line(f"**Test specification:**")
                                         if ms.test_spec:
-                                            p.write_line(f"{ms.test_spec}")
+                                            p.write_line(add_rst_citations(f"{ms.test_spec}"))
                                         else:
                                             p.write_line("Undefined")
                                         if ms.jira_testplan:
@@ -355,17 +357,18 @@ def generate_dmtn(milestones, wbs):
                         if ms.description:
                             with subsection.paragraph() as p:
                                 for line in ms.description.strip().split(". "):
-                                    p.write_line(line.strip(" .") + ".")
+                                    p.write_line(add_rst_citations(line.strip(" .") + "."))
                         else:
                             with subsection.admonition(
                                 "warning", "No description available"
                             ):
                                 pass
 
-    with doc.directive(
-        "bibliography", " ".join(glob.glob("lsstbib/*.bib")), {"style": "lsst_aa"},
-    ):
-        pass
+    with doc.section("Bibliography") as bib:
+        with bib.directive(
+            "bibliography", " ".join(glob.glob("lsstbib/*.bib")), {"style": "lsst_aa"},
+        ):
+            pass
 
     return doc.get_result()
 
