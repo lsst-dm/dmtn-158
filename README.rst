@@ -41,12 +41,15 @@ You can clone this repository and build the technote locally with `Sphinx`_:
    In a Conda_ environment, ``pip install -r requirements.txt`` doesn't work as expected.
    Instead, ``pip`` install the packages listed in ``requirements.txt`` individually.
 
+   You also need to install graphviz
+
 The built technote is located at ``_build/html/index.html``.
 
 Editing this technical note
 ===========================
 
-You can edit the ``index.rst`` file, which is a reStructuredText document.
+You SHOULD NOT  edit the ``index.rst`` file.
+
 The `DM reStructuredText Style Guide`_ is a good resource for how we write reStructuredText.
 
 Remember that images and other types of assets should be stored in the ``_static/`` directory of this repository.
