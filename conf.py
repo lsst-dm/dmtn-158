@@ -17,7 +17,7 @@ with open(metadata_path, 'r') as f:
 # Set revision date to the current date.
 # The “true” revision is really set by the version of the data used in the
 # milestones repository, but that's awkward to work with.
-confs['last_revised'] = datetime.datetime.now().strftime("%Y-%m-%d")
+confs['html_context']['last_revised'] = datetime.datetime.now().strftime("%Y-%m-%d")
 
 g = globals()
 g.update(confs)
