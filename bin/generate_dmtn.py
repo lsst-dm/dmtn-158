@@ -304,14 +304,14 @@ def generate_dmtn(milestones, wbs):
                                     p.write_line("No milestones due.")
 
     with doc.section("Milestones by WBS") as my_section:
-        for wbs in sorted(wbs_list):
-            with my_section.section(f"{wbs}: {WBS_DEFINITIONS[wbs]}") as section:
+        for sub_wbs in sorted(wbs_list):
+            with my_section.section(f"{sub_wbs}: {WBS_DEFINITIONS[sub_wbs]}") as section:
                 with section.figure(
-                    f"_static/graph_{wbs}.png", target=f"_static/graph_{wbs}.png"
+                    f"_static/graph_{sub_wbs}.png", target=f"_static/graph_{sub_wbs}.png"
                 ) as f:
                     with f.paragraph() as p:
                         p.write_line(
-                            f"Relationships between milestones in WBS {wbs} and "
+                            f"Relationships between milestones in WBS {sub_wbs} and "
                             f"their immediate predecessors and successors. "
                             f"Ellipses correspond to milestones within this WBS "
                             f"element; rectangles to those in other elements. "
@@ -319,7 +319,7 @@ def generate_dmtn(milestones, wbs):
                             f"milestones are overdue."
                         )
                 for ms in sorted(milestones, key=lambda ms: ms.due):
-                    if not ms.wbs.startswith(wbs):
+                    if not ms.wbs.startswith(sub_wbs):
                         continue
                     with section.section(
                         f"{ms.code}: {ms.name}", ms.code
@@ -339,6 +339,28 @@ def generate_dmtn(milestones, wbs):
                                             p.write_line("Undefined")
                                         if ms.jira_testplan:
                                             p.write_line(f":jirab:`{ms.jira_testplan}`")
+
+                            preds, succs = [], []
+                            for candidate in milestones:
+                                if candidate.code in ms.predecessors:
+                                    if candidate.wbs.startswith(wbs):
+                                        preds.append(f"`{candidate.code}`_")
+                                    else:
+                                        preds.append(candidate.code)
+                                if candidate.code in ms.successors:
+                                    if candidate.wbs.startswith(wbs):
+                                        succs.append(f"`{candidate.code}`_")
+                                    else:
+                                        succs.append(candidate.code)
+                            if preds:
+                                with my_list.bullet() as my_bullet:
+                                    with my_bullet.paragraph() as p:
+                                        p.write_line(f"**Predecessors**: {', '.join(preds)}")
+                            if succs:
+                                with my_list.bullet() as my_bullet:
+                                    with my_bullet.paragraph() as p:
+                                        p.write_line(f"**Successors**: {', '.join(succs)}")
+
                             with my_list.bullet() as my_bullet:
                                 with my_bullet.paragraph() as p:
                                     p.write_line(
