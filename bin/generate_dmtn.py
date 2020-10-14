@@ -200,6 +200,17 @@ def generate_dmtn(milestones, wbs):
 
     wbs_list = set(ms.wbs[:6] for ms in milestones if ms.wbs.startswith(wbs))
 
+    # Define replacements for all the milestone codes.
+    # This lets us change the way they are displayed according to their
+    # properties. In particular, we emphasize (= set in italics) all the
+    # completed milestones.
+    with doc.paragraph() as p:
+        for ms in milestones:
+            if ms.completed:
+                p.write_line(f".. |{ms.code}| replace:: *{ms.code}*")
+            else:
+                p.write_line(f".. |{ms.code}| replace:: {ms.code}")
+
     with doc.section("Provenance") as my_section:
         with my_section.paragraph() as p:
             sha, timestamp, p6_date = get_version_info()
@@ -213,6 +224,14 @@ def generate_dmtn(milestones, wbs):
             p.write_line(
                 f"This corresponds to the status recorded in the project "
                 f"controls system for {p6_date.strftime('%B %Y')}."
+            )
+
+    with doc.section("Notation") as my_section:
+        with my_section.paragraph() as p:
+            p.write_line(
+                "Throughout this document, the identifiers of completed "
+                "milestones are set in italics; those of milestones which are "
+                "still pending, in roman."
             )
 
     with doc.section("Summary") as my_section:
@@ -297,7 +316,7 @@ def generate_dmtn(milestones, wbs):
                             for ms in output:
                                 with my_list.bullet() as b:
                                     with b.paragraph() as p:
-                                        p.write_line(f"`{ms.code}`_: {ms.name}")
+                                        p.write_line(f"|{ms.code}|_: {ms.name}")
                         else:
                             with my_list.bullet() as b:
                                 with b.paragraph() as p:
@@ -305,9 +324,12 @@ def generate_dmtn(milestones, wbs):
 
     with doc.section("Milestones by WBS") as my_section:
         for sub_wbs in sorted(wbs_list):
-            with my_section.section(f"{sub_wbs}: {WBS_DEFINITIONS[sub_wbs]}") as section:
+            with my_section.section(
+                f"{sub_wbs}: {WBS_DEFINITIONS[sub_wbs]}"
+            ) as section:
                 with section.figure(
-                    f"_static/graph_{sub_wbs}.png", target=f"_static/graph_{sub_wbs}.png"
+                    f"_static/graph_{sub_wbs}.png",
+                    target=f"_static/graph_{sub_wbs}.png",
                 ) as f:
                     with f.paragraph() as p:
                         p.write_line(
@@ -322,7 +344,7 @@ def generate_dmtn(milestones, wbs):
                     if not ms.wbs.startswith(sub_wbs):
                         continue
                     with section.section(
-                        f"{ms.code}: {ms.name}", ms.code
+                        f"|{ms.code}|: {ms.name}", ms.code
                     ) as subsection:
                         with subsection.bullet_list() as my_list:
                             with my_list.bullet() as my_bullet:
@@ -334,7 +356,9 @@ def generate_dmtn(milestones, wbs):
                                     with my_bullet.paragraph() as p:
                                         p.write_line(f"**Test specification:**")
                                         if ms.test_spec:
-                                            p.write_line(add_rst_citations(f"{ms.test_spec}"))
+                                            p.write_line(
+                                                add_rst_citations(f"{ms.test_spec}")
+                                            )
                                         else:
                                             p.write_line("Undefined")
                                         if ms.jira_testplan:
@@ -344,22 +368,26 @@ def generate_dmtn(milestones, wbs):
                             for candidate in milestones:
                                 if candidate.code in ms.predecessors:
                                     if candidate.wbs.startswith(wbs):
-                                        preds.append(f"`{candidate.code}`_")
+                                        preds.append(f"|{candidate.code}|_")
                                     else:
-                                        preds.append(candidate.code)
+                                        preds.append(f"|{candidate.code}|")
                                 if candidate.code in ms.successors:
                                     if candidate.wbs.startswith(wbs):
-                                        succs.append(f"`{candidate.code}`_")
+                                        succs.append(f"|{candidate.code}|_")
                                     else:
-                                        succs.append(candidate.code)
+                                        succs.append(f"|{candidate.code}|")
                             if preds:
                                 with my_list.bullet() as my_bullet:
                                     with my_bullet.paragraph() as p:
-                                        p.write_line(f"**Predecessors**: {', '.join(preds)}")
+                                        p.write_line(
+                                            f"**Predecessors**: {', '.join(preds)}"
+                                        )
                             if succs:
                                 with my_list.bullet() as my_bullet:
                                     with my_bullet.paragraph() as p:
-                                        p.write_line(f"**Successors**: {', '.join(succs)}")
+                                        p.write_line(
+                                            f"**Successors**: {', '.join(succs)}"
+                                        )
 
                             with my_list.bullet() as my_bullet:
                                 with my_bullet.paragraph() as p:
@@ -379,7 +407,9 @@ def generate_dmtn(milestones, wbs):
                         if ms.description:
                             with subsection.paragraph() as p:
                                 for line in ms.description.strip().split(". "):
-                                    p.write_line(add_rst_citations(line.strip(" .") + "."))
+                                    p.write_line(
+                                        add_rst_citations(line.strip(" .") + ".")
+                                    )
                         else:
                             with subsection.admonition(
                                 "warning", "No description available"
@@ -388,7 +418,9 @@ def generate_dmtn(milestones, wbs):
 
     with doc.section("Bibliography") as bib:
         with bib.directive(
-            "bibliography", " ".join(glob.glob("lsstbib/*.bib")), {"style": "lsst_aa"},
+            "bibliography",
+            " ".join(glob.glob("lsstbib/*.bib")),
+            {"style": "lsst_aa"},
         ):
             pass
 
