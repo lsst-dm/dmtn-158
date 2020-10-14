@@ -324,9 +324,12 @@ def generate_dmtn(milestones, wbs):
 
     with doc.section("Milestones by WBS") as my_section:
         for sub_wbs in sorted(wbs_list):
-            with my_section.section(f"{sub_wbs}: {WBS_DEFINITIONS[sub_wbs]}") as section:
+            with my_section.section(
+                f"{sub_wbs}: {WBS_DEFINITIONS[sub_wbs]}"
+            ) as section:
                 with section.figure(
-                    f"_static/graph_{sub_wbs}.png", target=f"_static/graph_{sub_wbs}.png"
+                    f"_static/graph_{sub_wbs}.png",
+                    target=f"_static/graph_{sub_wbs}.png",
                 ) as f:
                     with f.paragraph() as p:
                         p.write_line(
@@ -353,7 +356,9 @@ def generate_dmtn(milestones, wbs):
                                     with my_bullet.paragraph() as p:
                                         p.write_line(f"**Test specification:**")
                                         if ms.test_spec:
-                                            p.write_line(add_rst_citations(f"{ms.test_spec}"))
+                                            p.write_line(
+                                                add_rst_citations(f"{ms.test_spec}")
+                                            )
                                         else:
                                             p.write_line("Undefined")
                                         if ms.jira_testplan:
@@ -374,11 +379,15 @@ def generate_dmtn(milestones, wbs):
                             if preds:
                                 with my_list.bullet() as my_bullet:
                                     with my_bullet.paragraph() as p:
-                                        p.write_line(f"**Predecessors**: {', '.join(preds)}")
+                                        p.write_line(
+                                            f"**Predecessors**: {', '.join(preds)}"
+                                        )
                             if succs:
                                 with my_list.bullet() as my_bullet:
                                     with my_bullet.paragraph() as p:
-                                        p.write_line(f"**Successors**: {', '.join(succs)}")
+                                        p.write_line(
+                                            f"**Successors**: {', '.join(succs)}"
+                                        )
 
                             with my_list.bullet() as my_bullet:
                                 with my_bullet.paragraph() as p:
@@ -398,7 +407,9 @@ def generate_dmtn(milestones, wbs):
                         if ms.description:
                             with subsection.paragraph() as p:
                                 for line in ms.description.strip().split(". "):
-                                    p.write_line(add_rst_citations(line.strip(" .") + "."))
+                                    p.write_line(
+                                        add_rst_citations(line.strip(" .") + ".")
+                                    )
                         else:
                             with subsection.admonition(
                                 "warning", "No description available"
@@ -407,7 +418,9 @@ def generate_dmtn(milestones, wbs):
 
     with doc.section("Bibliography") as bib:
         with bib.directive(
-            "bibliography", " ".join(glob.glob("lsstbib/*.bib")), {"style": "lsst_aa"},
+            "bibliography",
+            " ".join(glob.glob("lsstbib/*.bib")),
+            {"style": "lsst_aa"},
         ):
             pass
 
