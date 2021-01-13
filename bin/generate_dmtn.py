@@ -344,9 +344,12 @@ def generate_dmtn(milestones, wbs):
                     if not ms.wbs.startswith(sub_wbs):
                         continue
                     with section.section(
-                        f"|{ms.code}|: {ms.name}", ms.code
+                        f"|{ms.wbs} {ms.code}|: {ms.name}", ms.code
                     ) as subsection:
                         with subsection.bullet_list() as my_list:
+                            with my_list.bullet() as my_bullet:
+                                with my_bullet.paragraph() as p:
+                                    p.write_line(f"**WBS:**{ms.wbs}")
                             with my_list.bullet() as my_bullet:
                                 with my_bullet.paragraph() as p:
                                     level = ms.level if ms.level else "Undefined"
