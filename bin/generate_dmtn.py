@@ -344,7 +344,7 @@ def generate_dmtn(milestones, wbs):
                     if not ms.wbs.startswith(sub_wbs):
                         continue
                     with section.section(
-                        f"|{ms.wbs} {ms.code}|: {ms.name}", ms.code
+                        f"|{ms.code}|: {ms.name}", ms.code
                     ) as subsection:
                         with subsection.bullet_list() as my_list:
                             with my_list.bullet() as my_bullet:
