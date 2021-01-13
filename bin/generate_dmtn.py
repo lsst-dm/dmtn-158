@@ -349,7 +349,7 @@ def generate_dmtn(milestones, wbs):
                         with subsection.bullet_list() as my_list:
                             with my_list.bullet() as my_bullet:
                                 with my_bullet.paragraph() as p:
-                                    p.write_line(f"**WBS:**{ms.wbs}")
+                                    p.write_line(f"**WBS:** {ms.wbs}")
                             with my_list.bullet() as my_bullet:
                                 with my_bullet.paragraph() as p:
                                     level = ms.level if ms.level else "Undefined"
