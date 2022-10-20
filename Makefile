@@ -25,7 +25,7 @@ index.rst: bin/generate_dmtn.py refresh-bib
 	PYTHONPATH=milestones python bin/generate_dmtn.py
 
 _static/burndown.png:
-	PYTHONPATH=milestones python milestones/milestones.py burndown --output=_static/burndown.png
+	PYTHONPATH=milestones python milestones/milestones.py burndown --output=_static/burndown.png --months=3
 
 _static/graph_%.png:
 	PYTHONPATH=milestones python milestones/milestones.py graph --wbs=$* --output=$@.dot
