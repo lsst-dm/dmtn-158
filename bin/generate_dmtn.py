@@ -31,6 +31,7 @@ WBS_DEFINITIONS = {
     "02C.08": "International Communications and Base Site",
     "02C.09": "System Level Testing & Science Validation (Obsolete)",
     "02C.10": "Science Quality and Reliability Engineering",
+    "02C.11": "Security",
 }
 
 
