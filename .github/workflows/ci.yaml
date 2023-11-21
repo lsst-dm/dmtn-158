@@ -15,7 +15,7 @@ jobs:
       - name: Pull LFS files
         run: |
           git lfs install
-          git config -f .lfsconfig lfs.url https://git-lfs.lsst.codes
+          git config -f .lfsconfig lfs.url https://git-lfs.lsst.cloud/lsst-dm/dmtn-158
           git lfs pull
         working-directory: ./milestones
 
