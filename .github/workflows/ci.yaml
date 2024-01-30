@@ -30,11 +30,14 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install -r milestones/requirements.txt
 
-      - name: Build
-        shell: bash
+      - name: Install Graphviz
         run: |
-          make html
-        working-directory: .
+          sudo apt-get update
+          sudo apt-get -y install graphviz
+
+      - name: Build
+        run: |
+          PYTHONPATH=milestones make html
 
       - name: Upload
         if: ${{ github.event_name == 'push' }}
@@ -42,4 +45,4 @@ jobs:
           LTD_PASSWORD: ${{ secrets.LTD_PASSWORD }}
           LTD_USERNAME: ${{ secrets.LTD_USERNAME }}
         run: |
-          ltd upload --gh --dir _build/html --product dmtn-232
+          ltd upload --gh --dir _build/html --product dmtn-158
