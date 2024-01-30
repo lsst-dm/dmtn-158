@@ -1,2 +1,3 @@
+ltd-conveyor
 tox
 documenteer[technote]>=1.0,<2.0
