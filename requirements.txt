@@ -1,5 +1,2 @@
-documenteer[technote]>=0.5.4,<0.6.0
-matplotlib
-jira
-xlrd
-keyring
+tox
+documenteer[technote]>=1.0,<2.0

@@ -1,5 +1,8 @@
 _build/
-lsstbib/
-_static/burndown.png
-_static/graph_02C.??.png
-_static/graph_02C.??.png.dot
+.technote/
+.tox/
+venv/
+.venv/
+_static/gra*
+_static/burn*
+.idea
