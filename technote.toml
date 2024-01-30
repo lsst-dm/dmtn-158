@@ -1,0 +1,17 @@
+[technote]
+id = "DMTN-158"
+series_id = "DMTN"
+canonical_url = "https://dmtn-158.lsst.io/"
+github_url = "https://github.com/lsst-dm/dmtn-158"
+github_default_branch = "main"
+organization.name = "Vera C. Rubin Observatory"
+organization.ror = "https://ror.org/048g3cy84"
+license.id = "CC-BY-4.0"
+[[technote.authors]]
+name = {given = "William", family = "O'Mullane"}
+internal_id = "omullanew"
+orcid = "https://orcid.org/0000-0003-4141-6195"
+[[technote.authors.affiliations]]
+name = "Vera C. Rubin Observatory"
+internal_id = "RubinObsC"
+address = "Avenida Juan Cisternas #1500, La Serena, Chile"
