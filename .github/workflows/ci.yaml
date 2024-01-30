@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # full history for metadata
           submodules: true
@@ -30,14 +30,11 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install -r milestones/requirements.txt
 
-      - name: Install Graphviz
-        run: |
-          sudo apt-get update
-          sudo apt-get -y install graphviz
-
       - name: Build
+        shell: bash
         run: |
-          PYTHONPATH=milestones make html
+          make html
+        working-directory: .
 
       - name: Upload
         if: ${{ github.event_name == 'push' }}
@@ -45,4 +42,4 @@ jobs:
           LTD_PASSWORD: ${{ secrets.LTD_PASSWORD }}
           LTD_USERNAME: ${{ secrets.LTD_USERNAME }}
         run: |
-          ltd upload --gh --dir _build/html --product dmtn-158
+          ltd upload --gh --dir _build/html --product dmtn-232
