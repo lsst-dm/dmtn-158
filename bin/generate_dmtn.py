@@ -264,11 +264,17 @@ def generate_dmtn(milestones, wbs):
                 p.write_line("Milestone completion as a function of date.")
 
     with doc.section("Currently overdue milestones") as my_section:
+        now = datetime.now()
         overdue_milestones = [
             ms
             for ms in milestones
-            if ms.due < datetime.now() and ms.wbs.startswith(wbs) and not ms.completed
+            if ms.due < now and ms.wbs.startswith(wbs) and not ms.completed
         ]
+        
+        with my_section.paragraph() as p:
+            p.write_line(
+                f"There are {len(overdue_milestones)} milestones overdue as of {now}."
+            )
 
         if overdue_milestones:
             with my_section.bullet_list() as my_list:
