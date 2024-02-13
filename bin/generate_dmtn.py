@@ -149,7 +149,7 @@ Section = add_context("section", Section, needs_level=True)(Section)
 @add_context("bullet_list", BulletList)
 @add_context("directive", Directive)
 class ReSTDocument(TextAccumulator):
-    def __init__(self, title=None, subtitle=None, options=None):
+    def __init__(self, title="DM Milestone Status", subtitle=None, options=None):
         super().__init__()
         if title:
             self._buffer.write(underline(title, HEADING_CHARS[0], True) + "\n")
@@ -197,7 +197,7 @@ def get_extreme_dates(milestones):
 
 
 def generate_dmtn(milestones, wbs):
-    doc = ReSTDocument(options={"tocdepth": 1})
+    doc = ReSTDocument()
 
     wbs_list = set(ms.wbs[:6] for ms in milestones if ms.wbs.startswith(wbs))
 
