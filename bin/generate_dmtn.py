@@ -149,7 +149,7 @@ Section = add_context("section", Section, needs_level=True)(Section)
 @add_context("bullet_list", BulletList)
 @add_context("directive", Directive)
 class ReSTDocument(TextAccumulator):
-    def __init__(self, title=None, subtitle=None, options=None):
+    def __init__(self, title="DM Milestone Status", subtitle=None, options=None):
         super().__init__()
         if title:
             self._buffer.write(underline(title, HEADING_CHARS[0], True) + "\n")
@@ -197,7 +197,7 @@ def get_extreme_dates(milestones):
 
 
 def generate_dmtn(milestones, wbs):
-    doc = ReSTDocument(options={"tocdepth": 1})
+    doc = ReSTDocument()
 
     wbs_list = set(ms.wbs[:6] for ms in milestones if ms.wbs.startswith(wbs))
 
@@ -264,11 +264,17 @@ def generate_dmtn(milestones, wbs):
                 p.write_line("Milestone completion as a function of date.")
 
     with doc.section("Currently overdue milestones") as my_section:
+        now = datetime.now()
         overdue_milestones = [
             ms
             for ms in milestones
-            if ms.due < datetime.now() and ms.wbs.startswith(wbs) and not ms.completed
+            if ms.due < now and ms.wbs.startswith(wbs) and not ms.completed
         ]
+        
+        with my_section.paragraph() as p:
+            p.write_line(
+                f"There are {len(overdue_milestones)} milestones overdue as of {now}."
+            )
 
         if overdue_milestones:
             with my_section.bullet_list() as my_list:
