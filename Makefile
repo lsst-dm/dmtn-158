@@ -27,7 +27,7 @@ clean:
 	git checkout index.rst
 	rm -f _static/burndown.png
 
-index.rst: bin/generate_dmtn.py
+index.rst: bin/generate_dmtn.py milestones
 	PYTHONPATH=milestones python3 bin/generate_dmtn.py
 
 _static/burndown.png:
